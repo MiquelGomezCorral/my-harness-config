@@ -6,8 +6,6 @@ bootstrap writes native assets while preserving unrelated user configuration. De
 uses an active wrapper's lifecycle when one is present; otherwise it uses the current
 harness's native worker tools.
 
-OpenCode configuration remains separately owned by `my-opencode-config`.
-
 ## Workflow diagrams
 
 ![Whole workflow](workflow-diagrams/Whole-Flow.png)
