@@ -40,19 +40,15 @@ between two and four specialists by default. When the user requests five, add an
 independent adversarial pass over the highest-risk selected lens. Lens specialists use the
 catalog `swarms` role.
 
-Every swarm also launches strong reviewers from the catalog `reviewer-high` role: one by
-default, two when the change touches security, data, public contracts, or migrations, or
-is large or spans several modules. The first takes the first entry that can run and the
-second the next one (the same entry when only one can run), each asked for a slightly
-different angle so they do not return the same answer. When the selected entry is a `pi`
-entry, it launches three workers per listed pi model instead of one, each asked for a
-slightly different angle so they do not all give the same answer; they count as that one
-strong reviewer. They are not lens specialists: each
-reviews the complete change on its own against the goal and plan, covering correctness,
-design, and whether the change is simpler than it needs to be. They run concurrently with the lens specialists,
-receive the same packet with `Lens: complete change`, and their findings go through the
-same synthesis. When a strong reviewer cannot run, the review continues and its report
-tells the user about the reduced coverage. An explicit user roster wins: do not add strong
+Every swarm also launches one strong reviewer from the catalog `reviewer-high` role, reviewing
+the complete change on its own against the goal and plan, covering correctness, design, and
+whether the change is simpler than it needs to be. It joins the first batch with the lens
+specialists, receives the same packet with `Lens: complete change`, and its findings go
+through the same synthesis. Launch a second strong reviewer only for a named obligation the
+first cannot cover (a disjoint path set, a required compliance check, or the user's explicit
+roster), and state that obligation in the packet instead of an "angle". One `pi` entry
+launches one worker, not one per listed model. When a strong reviewer cannot run, the review
+continues and its report tells the user about the reduced coverage. An explicit user roster wins: do not add strong
 reviewers to it, and report the skipped strong review as missing coverage.
 
 When Codex is selected, map these lenses to `reviewer-quick`, `reviewer-reasoning`,
@@ -64,7 +60,7 @@ use other available harnesses for the remainder. Preserve any explicit or review
 preference, including an exact AGY/Pi roster.
 
 The coordinator itself performs complete-diff inspection and does not outsource the
-selection decision. It uses the smallest justified lens set, adds the strong reviewers
+selection decision. It uses the smallest justified lens set, adds the strong reviewer
 unless an explicit roster applies, and reports missing coverage when a justified specialist cannot run.
 Before dispatch, it discovers applicable decision records and includes their exact paths and
 protected constraints in the shared specialist packet.
@@ -89,14 +85,29 @@ Catalog role: the role the coordinator routed through `super-agent`
 Harness/model/thinking: the resolved harness, exact model, and thinking level
 Lifecycle: fresh task through the active wrapper or current-harness equivalent
 Lens: the specialist's assigned review dimension
+Diff hash: `git diff HEAD | git hash-object --stdin` (workflow: the recorded base..head)
+Lens id: the lens name, its obligation, and its path set, unique per claim
 Deliverable: findings only against the reviewed change, with path:line, scope, source evidence, and confidence
 Stop: return after the assigned lens is covered or state the concrete blocker
 ```
 
+## Lens claims
+
+One coordinator owns each lens before it launches: `.git/agent-memory/review-claims/<diff-hash>/<lens-id>/`.
+Create it with `mkdir` (which fails when it exists), write `owner` and `status: running`, and
+launch only when the create succeeds. On return, write `status: done` and the report path; on
+failure, `status: blocked`. A claim that reads `done` or `blocked` may be taken again. A
+`running` claim older than the worker's stall timeout may be reclaimed only after the
+coordinator confirms that worker is gone. Outside a Git repository, skip claims and say so in
+the report. The claim is the dedupe key: a second coordinator that sees `running` or `done`
+for the same diff and lens does not launch it again.
+
 ## Launch and recovery
 
 Route all independent selected specialists before launching them, then launch them in the
-same turn, within the grant's `active` cap, when the active wrapper supports it. Use the
+same turn, within the grant's `active` cap, when the active wrapper supports it. A coordinator
+keeps at most three workers of its own in flight, four including itself; when the selection is
+larger, launch the first three and the second batch after one settles. Use the
 wrapper through `super-agent` for fresh-task, wait, bounded-message, and cancellation
 operations; without a wrapper, use the current harness's native equivalents. Do not reuse
 a session or pass a task key.

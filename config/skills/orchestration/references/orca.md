@@ -70,7 +70,8 @@ For ports, follow the Ports paragraph in the `agent-artifacts` skill.
 
 ## Retention and release
 
-Retain a worker only when the calling workflow requires it. Verify parent, harness, role,
+Retain a worker only when the calling workflow requires it, and only while it continues the
+same task. Verify parent, harness, role,
 model, thinking, and directory before resuming; otherwise start fresh through the documented guide.
 Release settled workers as the guide requires. Report lifecycle failures and effective-model
 gaps; do not fall through to an unmanaged CLI launch.

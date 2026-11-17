@@ -18,8 +18,9 @@ Use a swarm only when:
 - Parallelism or independent review justifies the extra tokens and coordination.
 
 The one-worker preference in `SKILL.md` (Delegate or not) applies first. Launch only workers
-with distinct responsibilities and honor the runtime concurrency limit across the whole
-agent tree. Duplicate prompts only for intentional independent voting.
+with distinct responsibilities and keep at most three of your own in flight, four including
+yourself; a runtime limit still applies on top. Duplicate prompts only for intentional
+independent voting.
 
 ## Isolated tasks
 
@@ -73,7 +74,7 @@ recursive delegation or a user-selected workflow requires it; descendants cannot
 themselves more delegation authority. The root packet must set:
 
 - the independent child scopes;
-- maximum depth, total descendants, and active-descendant concurrency;
+- maximum depth, total descendants, and active-descendant concurrency for that coordinator;
 - allowed harnesses, roles, and model requirements;
 - file ownership and whether descendants are read-only;
 - whether another nesting level is forbidden;
@@ -98,14 +99,16 @@ synthesize them; it must not forward raw transcripts to its parent.
 - Parallel readers are safe. Concurrent writers need disjoint files or isolated
   worktrees; otherwise serialize them.
 - State explicit file ownership and tell workers not to revert unrelated or concurrent
-  changes. All descendants count against the shared concurrency budget.
+  changes. All descendants count against their own coordinator's cap; a coordinator never
+  spends another one's slots.
 - Never let workers commit, push, publish, deploy, or change shared infrastructure
   unless the user authorized that exact action.
 
 ## Failure And Boundaries
 
 - Continue with useful successful workers when a non-critical worker fails.
-- Prefer one narrow follow-up in the owned retained session over relaunching it.
+- Reuse the owned retained session only while it continues the same task; otherwise launch a
+  fresh worker and settle the old one.
 - Do not replay prompts into unknown sessions or reuse a child after its identity no
   longer matches the task.
 - Do not broaden permissions or hide failures.

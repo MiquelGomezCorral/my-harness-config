@@ -3,7 +3,7 @@
 Use the adaptive, read-only specialist review in
 [swarm coordination](../swarm-coordination.md). The
 coordinator chooses only justified quick, reasoning, architecture, and integration lenses,
-adds the strong complete-change reviewers (one, or two for a risky or large change), then
+adds the strong complete-change reviewer (a second only for a named obligation), then
 verifies and deduplicates their evidence. Include `Review mode: swarm` and the
 normalized `Swarm models` marker. This preset does not enable Slopo or live validation.
 OCR runs only when `$review --ocr` is explicitly requested.

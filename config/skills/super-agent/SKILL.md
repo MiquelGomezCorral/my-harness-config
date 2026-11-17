@@ -186,7 +186,14 @@ Every automatic launch packet follows the one template in `references/routing.md
   use its output. Report an unavailable pinning option or unverified effort instead of silently
   dropping it.
 - Resume only an exact retained session whose parent, harness, role, model, thinking, and
-  directory still match. Otherwise launch fresh and report the ownership mismatch.
+  directory still match, and only while it continues the same task. Otherwise launch fresh
+  and report the ownership mismatch.
+- A worker session or terminal is disposable. Reuse it only for the same task with the same
+  goal, scope, permissions, and directory; a new task, slice, stage, or round starts a fresh
+  worker, and the old one is settled and closed.
+- Each coordinator runs at most three workers of its own at once, four including itself. The
+  cap is per coordinator, never a global budget another coordinator can spend, and the
+  runtime or grant limit still applies on top.
 
 ## Report
 
