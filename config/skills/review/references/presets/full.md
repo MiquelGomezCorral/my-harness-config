@@ -32,7 +32,7 @@ or `large` one) owns the app for the live round. Run the round this way:
 - The parent starts the app once with one straightforward attempt, smokes it, and gives
   every tester that running instance. If it does not start, report the round's tests as
   `not possible: <reason>`.
-- Run independent tests in parallel and tests that share state one at a time. The parent
+- Run independent tests in batches of three workers, and tests that share state one at a time. The parent
   resets the shared data between sequential tests and between repeats.
 - Report each result as pass, fail, unclear, or not possible, with evidence: the command
   and its output, a screenshot, or a log. A result without evidence counts as not run.

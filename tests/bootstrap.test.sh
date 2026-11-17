@@ -230,10 +230,13 @@ printf '%s\n' 'user-owned role' > "$CODEX_TARGET/agents/coder.toml"
 cat > "$CODEX_TARGET/config.toml" <<'TOML'
 model = "user-selected-model"
 custom_root_setting = "preserve"
+custom.nested.keep = true
 user_paths = ["one", "two"]
 plan_mode_reasoning_effort = "medium"
 mcp_servers.dotted_local.command = "local-dotted-helper"
 mcp_servers.dotted_local.args = []
+[skills]
+config = [{ name = "other", enabled = false }]
 [features]
 hooks = false
 local_option = "preserve"
@@ -274,6 +277,8 @@ config = tomllib.loads(config_path.read_text(encoding="utf-8"))
 assert config["model"] == "gpt-6.1-sol"
 assert config["model_auto_compact_token_limit"] == 300000
 assert config["custom_root_setting"] == "preserve"
+assert config["custom"]["nested"]["keep"] is True
+assert config["skills"]["config"] == [{"name": "writing", "enabled": False}], config["skills"]
 assert config["user_paths"] == ["one", "two"]
 assert config["plan_mode_reasoning_effort"] == "medium"
 assert config["features"]["hooks"] is True

@@ -145,7 +145,7 @@ The coordinator assigns only the justified review lenses and routes fresh specia
 through `super-agent`. Codex routes use the configured Codex reviewers; other routes
 use their own configured roles. Specialists never delegate further. Readers are concurrent;
 writers remain forbidden. Retained follow-ups use the selected harness's exact-session
-identity checks. The coordinator and specialists use bounded verification; publishing and
+identity checks, and only while the follow-up continues the same task. The coordinator and specialists use bounded verification; publishing and
 unapproved edits remain unavailable.
 
 For swarm modes, follow [swarm coordination](swarm-coordination.md) within

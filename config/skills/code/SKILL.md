@@ -81,7 +81,7 @@ missing or conflicts with the plan. Keep one product-code writer at a time.
 Use the active wrapper through `super-agent` for the initial worker and its
 retained-session mechanism when one is present; without a wrapper, use the current
 harness's native worker lifecycle. Reuse only an exact session whose parent, harness,
-role, model, and directory still match. Otherwise start a fresh suitable worker and
+role, model, and directory still match, and only while it continues the same task. Otherwise start a fresh suitable worker and
 report the mismatch.
 The retained writer uses the harness's normal native coding capability. Stage routes and
 their limits are in `workflow/references/native-capabilities.md`.

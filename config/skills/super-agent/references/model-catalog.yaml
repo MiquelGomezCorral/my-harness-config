@@ -7,9 +7,9 @@ local_models: not-available
 codex:
   low:
     model: gpt-6-luna
-    thinking: medium
+    thinking: xhigh
   medium:
-    model: gpt-6-luna
+    model: gpt-6.1-terra
     thinking: xhigh
   high:
     model: gpt-6.1-sol
@@ -18,7 +18,7 @@ codex:
 claude:
   low:
     model: claude-haiku-5-5
-    thinking: xhigh
+    thinking: max
   medium:
     model: claude-sonnet-5-5
     thinking: xhigh
@@ -32,13 +32,13 @@ pi:
     thinking: high
   medium:
     model:
-      - opencode-go/glm-5.3-flash
       - opencode-go/deepseek-v4.1-flash
-    thinking: high
+      - opencode-go/glm-5.3-flash
+    thinking: xhigh
   high:
     model:
-      - opencode-go/glm-5.3-flash
       - opencode-go/deepseek-v4.1-flash
+      - opencode-go/glm-5.3-flash
     thinking: max
   local:
     medium:
@@ -80,7 +80,7 @@ sub_orchestrator:
   medium:
     harness: claude
     model: claude-sonnet-5-5
-    thinking: high
+    thinking: xhigh
   small: none
 
 coder:
@@ -89,22 +89,23 @@ coder:
     model: claude-sonnet-5-5
     thinking: xhigh
   medium:
-    harness: claude
-    model: claude-haiku-5-5
-    thinking: max
-  small:
     harness: pi
     model: opencode-go/deepseek-v4.1-flash
+    thinking: max
+  small:
+    harness: claude
+    model: claude-haiku-5-5
     thinking: max
 
 explorer:
   - harness: pi
     model: opencode-go/deepseek-v4.1-flash
     thinking: max
-  - harness: claude
-    model: claude-haiku-5-5
-    thinking: max
+#  - harness: claude
+#    model: claude-haiku-5-5
+#    thinking: max
 
+# Prefere by order, only use the next if the previews ha ran out of quota
 adversarial:
   - harness: codex
     model: gpt-6.1-sol
@@ -118,11 +119,12 @@ adversarial:
       - opencode-go/glm-5.3-flash
     thinking: max
 #  - harness: claude
-#    model: claude-fable-5-1
+#    model: claude-fable-5-2
 #    thinking: high
 
 # Roles with `harness: current` below run on the harness of the agent doing the launch, using that
 # harness's by_harness entry, or its `low` tier above when that model is unavailable.
+# Prefere by order, only use the next if the previews ha ran out of quota
 reviewer-fast:
   harness: current
   by_harness:
@@ -141,19 +143,19 @@ reviewer-fast:
       model: claude-haiku-5-5
       thinking: xhigh
 
-# Follows the launching harness, as reviewer-fast does.
+# Follows the launching harness, as reviewer-fast does. Prefere by order, only use the next if the previews ha ran out of quota
 computer-controller:
   harness: current
   by_harness:
     agy:
       model: gemini-3.8-flash-medium
       thinking: medium
-    pi:
-      model: opencode-go/deepseek-v4.1-flash
-      thinking: medium
-    codex:
-      model: gpt-6-luna
-      thinking: medium
+#    pi:
+#      model: opencode-go/deepseek-v4.1-flash
+#      thinking: max
+#    codex:
+#      model: gpt-6-luna
+#      thinking: medium
     claude:
       model: claude-haiku-5-5
       thinking: medium
@@ -167,9 +169,9 @@ ui-checker:
       thinking: high
     pi:
       model:
-        - opencode-go/glm-5.3-flash
         - opencode-go/deepseek-v4.1-flash
-      thinking: high
+        - opencode-go/glm-5.3-flash
+      thinking: max
     codex:
       model: gpt-6-luna
       thinking: xhigh
@@ -181,9 +183,9 @@ reviewer-high:
   - harness: codex
     model: gpt-6.1-sol
     thinking: xhigh
-#  - harness: claude
-#    model: claude-opus-5-5
-#    thinking: high
+  - harness: claude
+    model: claude-sonnet-5-5
+    thinking: xhigh
 
 
 swarms:
@@ -222,4 +224,4 @@ git-worker:
 # Claude helper launches only. Start Claude with AGENT_MODEL_GUARD=off to skip it for one session.
 model_guard:
   claude-opus-5-5: [super_agent, sub_orchestrator, reviewer-high]
-  claude-fable-5-1: [adversarial, reviewer-high]
+  claude-fable-5-2: [adversarial, reviewer-high]

@@ -81,6 +81,39 @@ PY
   mv "$temporary" "$settings"
 }
 
+set_go_compaction() {
+  # Go bills every re-sent token and sessions live at 100-200K, so the Go models compact at 125K.
+  # Pi triggers at contextWindow - reserveTokens; both models have a 1M window.
+  # The Go model allowlist lives in config/pi/extensions/opencode-go-models.ts.
+  local settings="$PI_AGENT_ROOT/settings.json" temporary
+  temporary=$(mktemp "$PI_AGENT_ROOT/settings.json.XXXXXX")
+  if ! python3 - "$settings" "$temporary" <<'PY'
+import json
+import pathlib
+import sys
+
+source, output = pathlib.Path(sys.argv[1]), pathlib.Path(sys.argv[2])
+data = json.loads(source.read_text(encoding="utf-8")) if source.exists() else {}
+overrides = data.setdefault("compaction", {}).setdefault("modelOverrides", {})
+for model in ("opencode-go/deepseek-v4.1-flash", "opencode-go/glm-5.3-flash"):
+    overrides.setdefault(model, {})["reserveTokens"] = 875000
+output.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+PY
+  then
+    rm -f "$temporary"
+    return 1
+  fi
+  if cmp -s "$settings" "$temporary"; then
+    rm -f "$temporary"
+    return 0
+  fi
+  if [[ -e "$settings" ]]; then
+    chmod --reference="$settings" "$temporary"
+    common_backup_existing "$settings"
+  fi
+  mv "$temporary" "$settings"
+}
+
 install_pi_extensions() {
   install_pi_package pi-subagents npm:pi-subagents@0.79.1 0.79.1
   remove_pi_mcp_adapter
@@ -174,6 +207,7 @@ main() {
   install_assets
   install_pi_extensions
   enable_builtin_mcp
+  set_go_compaction
   printf 'Installed Pi configuration. Restart Pi after reviewing generated assets.\n'
 }
 

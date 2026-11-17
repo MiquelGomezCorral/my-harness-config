@@ -43,7 +43,7 @@ icons for review JSON.
 Keep product edits with a retained implementation worker. Delegate substantial
 investigation, research, evidence verification, and artifact production through
 `super-agent`. Use fresh sessions for distinct stages and slices, and retain a worker
-only within its assigned loop. Never give one slice more than one active writer.
+only while it continues its assigned task. Never give one slice more than one active writer.
 
 Pass stage skills this context after the wave plan is approved:
 
@@ -152,7 +152,7 @@ context conflicts or a non-Git action's bounds are missing.
    every task-owned staged, unstaged, and untracked change. Pass the reviewer the base, head,
    task-owned paths, and any `Review focus`; it reports the inspected revisions. Standalone
    `$review` keeps staged-first selection. Each round runs the code review and the slice's
-   live tests together, gathers insights, and plans fixes, as the
+   live tests in the same round, batching workers three at a time, gathers insights, and plans fixes, as the
    [coding loop](references/coding-loop.md) describes.
    Verify findings before correction, then route and escalate them as the
    [coding loop](references/coding-loop.md) step 6 sets.

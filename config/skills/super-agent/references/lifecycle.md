@@ -34,7 +34,8 @@ Procedures for worker launch, steering, recovery, and release. The policy itself
 
 - Keep a worker only when the calling workflow explicitly requires retention; otherwise
   release settled workers as the environment's guide requires.
-- Reuse requires a fresh dispatch. Never replay a prompt into an unknown terminal.
+- Reuse requires a fresh dispatch and the same task. Never replay a prompt into an unknown
+  terminal or hand a new task to an old worker.
 
 ## Recovery
 

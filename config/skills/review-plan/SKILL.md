@@ -21,9 +21,8 @@ live testing, or Git actions; report missing or conflicting approval requirement
 Load `super-agent` without restarting planning. Route two fresh `critic` workers
 concurrently from the catalog `adversarial` role: the first critic takes the first entry
 that can run and the second the next one, each asked for a slightly different angle so
-they do not return the same answer. When a critic's entry is a `pi` entry, it launches
-three workers per listed pi model, each asked for a slightly different angle so they do not
-all give the same answer; those workers count as that one critic. Prefer at least one critic from a model family other
+they do not return the same answer. A `pi` entry launches one worker, not one per listed
+model. Prefer at least one critic from a model family other
 than the planner's: pass the planner's effective model and family to `super-agent`, using
 the runtime-reported model when available, otherwise its configured model. Preserve an
 explicit human harness or model choice. `super-agent` reads

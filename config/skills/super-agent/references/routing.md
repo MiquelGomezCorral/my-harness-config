@@ -49,6 +49,9 @@ Depth: <parent depth + 1; 1 for a root child>
 Delegation: allowed (max depth N, total N, active N) | forbidden
 ```
 
+`active` counts workers in flight for that one coordinator, never the whole tree: a
+coordinator runs at most three of its own, four including itself.
+
 ## Launch permissions
 
 The approved policy is no permission prompts and no OS sandbox, including reviewers. Codex
@@ -56,6 +59,15 @@ uses `--sandbox danger-full-access` and `--ask-for-approval never`; AGY uses
 `--dangerously-skip-permissions` without `--sandbox`. These override role-file sandbox
 settings for these launches and are not re-approved. Pass them through the active wrapper's
 documented launch path; if that path cannot express them, report the limitation.
+The Codex one-shot adapter takes the same pair explicitly, as in
+`codex exec --sandbox danger-full-access --ask-for-approval never`. A bare `codex exec` uses
+its read-only sandbox, which fails here before the first file read with
+`bwrap: loopback: Failed RTM_NEWADDR` and burns calls. A worker whose first read fails with a
+sandbox error reports `blocked` on that call instead of retrying the read.
+
+Before launching a worker that spends a subscription, read that harness's last usage
+snapshot when it exposes one. At 95% or more of any window, do not launch; after a limit hit,
+wait for the reset time the CLI prints instead of retrying.
 
 Role metadata does not restrict tools. The role task still defines read-only work, output
 directories, nesting grants, and any no-edit, no-commit, or no-deployment boundaries. Keep
@@ -69,7 +81,7 @@ verified argument vector (argv) templates for Codex, Pi, AGY, OpenCode, and the
 user-selected Claude one-shot route are:
 
 ```text
-["codex", "exec", "-c", "model_reasoning_effort=<catalog_thinking>", "--model", catalog_model, prompt]
+["codex", "exec", "--sandbox", "danger-full-access", "--ask-for-approval", "never", "-c", "model_reasoning_effort=<catalog_thinking>", "--model", catalog_model, prompt]
 ["pi", "--model", catalog_model, "--thinking", catalog_thinking, "--print", "--", prompt]
 ["agy", "--model", catalog_model, "--effort", catalog_thinking, "--print", "--dangerously-skip-permissions", prompt]
 ["opencode", "run", "--model", catalog_model, "--variant", catalog_thinking, prompt]

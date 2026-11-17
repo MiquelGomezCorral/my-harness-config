@@ -102,6 +102,7 @@ after a hook or a plugin with hooks changes.
   dangling links in every harness folder and synced or bundled Claude skills duplicated the
   repository's own.
 - 2026-10-19: The user set compaction at 300k for Claude and Codex to cut context re-reading; they raise it if sessions compact too often.
+- 2026-11-17: Pi compacts the OpenCode Go models at 125K (per-model `compaction.modelOverrides`, written by `bootstrap_pi.sh`), and the catalog tries DeepSeek before GLM everywhere. Go bills every re-sent token in dollars, and long sessions live at 100-200K.
 - 2026-10-19: The Codex bootstrap now lists hooks waiting for trust, because Codex
   sessions and Orca workers kept stopping on the review prompt after a plugin update;
   bypassing hook trust was rejected.

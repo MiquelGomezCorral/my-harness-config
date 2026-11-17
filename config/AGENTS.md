@@ -9,11 +9,11 @@ not weaken security or explicit user constraints.
 - When a task needs the current time, read it from the machine with `TZ=Europe/Madrid date`
   instead of assuming it: Spain is UTC+1 (CET) in winter, UTC+2 (CEST) in summer, never UTC+3.
 - Be concise and direct; omit pleasantries, tool narration, and redundant summaries.
-  - Read `writing` references `natural-writing` and `voice-profile` to write better.
+  - Read `writing`'s `natural-writing` and `voice-profile` references to write better; Codex keeps its own terse report style with that skill disabled.
   - Goal: the most information, most understandable, in the least text.
   - No walls of text or elaborate reports nobody reads: focused, narrow, straight to the point, in basic human wording rather than technical. If asked, add lists, groups of lists, or tables with extra info after it.
   - Bullets carry enough information to be understood, then a few extra lines in case the title is not enough. Titles run two to ten words; a title is good enough if, with enough context, it alone tells you what the 1, 2, or 3 lines after it say.
-- Use the Caveman writing rules in `writing` for assistant-written prose. Keep meaning,
+- Use the Caveman writing rules in `writing`, where that skill is installed, for assistant-written prose. Keep meaning,
   technical accuracy, and natural clarity; do not apply the style to code or quoted text.
 - Cite code as `path/to/file:line`. Ask only when ambiguity changes scope or outcome.
 - Never hand the user a bare ID or hash. Say what it is first and put the ID after
@@ -103,7 +103,7 @@ before editing, and do not broaden the task or add speculative features.
 focused skill.
 - Before writing or editing any prose — messages, documentation, explainers, posts, or
 academic text — load `writing` and read its `natural-writing` and `voice-profile`
-references.
+references when that skill is installed. Codex has it disabled in `config/codex.toml`.
 - Before writing or editing code, load `code-quality` and read the reference for the
 language of the files you touch. The repository's own coding guidelines come first and
 win where they differ. The standard is mandatory, not advisory, for everything they leave open.
@@ -115,7 +115,9 @@ harness defaults when the selected catalog route cannot run.
 Run only models from that catalog, including one-shot CLIs and app test runs that spend one
 of the user's subscriptions, unless the user named the model. When a subscription runs out,
 fall back only to the role's next catalog entry; if none is left, stop and ask your parent
-(the root asks the user).
+(the root asks the user). Before a launch that spends a subscription, read that harness's
+last usage snapshot: at 95% or more of any window, do not launch, and after a limit hit wait
+for the reset time the CLI prints instead of retrying.
 A proven active wrapper owns agent launch, messaging, waiting, resume, and cleanup;
 without one, use the current harness's native lifecycle. Do not bypass an active wrapper
 with direct harness launches, and use another harness only through an explicit
@@ -163,6 +165,10 @@ to the user, and assessing plan-critique findings and decision records stay with
   `super-agent`.
 - **Give a complete task:** goal, scope, exclusions, deliverable, evidence, and stop
   condition, so the helper needs nothing else from the conversation.
+- **Reuse only the same task:** a worker session or terminal is disposable. Reuse one only
+  when the next turn continues the same task with the same goal, scope, permissions, and
+  directory. A new task, slice, stage, or review or cleanup round starts a fresh worker, and
+  the old one is settled and closed.
 - **Keep control:** track every request on a to-do list, check on, message, or
   stop a helper when asked. Take back a short report and verify consequential claims before
   relaying them.

@@ -51,7 +51,7 @@ Launch exactly one fresh `cleanup-worker` through `super-agent`, with
 `small` slice, as the catalog has no small entry), and with the plan or goal, task-owned
 paths and exclusions, the complete status snapshot, and the workflow comparison basis when
 supplied. Grant it delegation for the cleanup swarm: maximum depth
-one, at most six read-only descendants, none of which may delegate. A workflow may pass
+one, at most three read-only descendants at once, none of which may delegate. A workflow may pass
 `Audit depth: light`; pass it on. Without it, the audit is full. The packet must contain
 exactly one `Slopo mode` marker: `Slopo mode: enabled` when `$cleanup --slopo` was
 supplied, otherwise `Slopo mode: disabled`. Consume the flag in the parent; never forward
@@ -63,11 +63,9 @@ it does not expand the worker's read-only audit or Slopo opt-in.
 The coordinator audits production and tests and runs the read-only checks
 `code-quality` requires, reporting each failure as a finding. It always runs the cleanup
 swarm that the `cleanup-worker` role defines: `swarms` lens specialists, using reviewers
-such as `reviewer-arch` and `reviewer-reasoning`, plus `reviewer-high` simplest-design
-reviewers: one, or two under the risk condition of the review swarm (security, data,
-public contracts, migrations, or a large or multi-module change; see
-[swarm coordination](../review/references/swarm-coordination.md), which also owns the
-`pi` entry rule of three workers per listed pi model). With `Audit depth: light`, the role's
+such as `reviewer-arch` and `reviewer-reasoning`, plus one `reviewer-high` simplest-design
+reviewer, with a second only for a named obligation (see
+[swarm coordination](../review/references/swarm-coordination.md)). With `Audit depth: light`, the role's
 one-agent swarm replaces the list above. Its return ends with the roster of launched and
 self-covered lenses.
 
