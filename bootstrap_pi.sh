@@ -116,6 +116,7 @@ PY
 
 install_pi_extensions() {
   install_pi_package pi-subagents npm:pi-subagents@0.79.1 0.79.1
+  install_pi_package pi-quiet-tools npm:pi-quiet-tools@0.2.0 0.2.0
   remove_pi_mcp_adapter
   if ! pi list 2>/dev/null | grep -Fq 'cathrynlavery/diagram-design'; then
     pi install https://github.com/cathrynlavery/diagram-design
@@ -189,6 +190,7 @@ install_assets() {
       --source "$source" --target "$PI_AGENT_ROOT/prompts" --backup "$BACKUP_ROOT"
   done
   common_link_managed "$ROOT/config/pi/extensions/opencode-go-models.ts" "$PI_AGENT_ROOT/extensions/opencode-go-models.ts"
+  common_link_managed "$ROOT/config/pi/extensions/quiet-tools-settings.ts" "$PI_AGENT_ROOT/extensions/quiet-tools-settings.ts"
   install_mcp_config
 }
 

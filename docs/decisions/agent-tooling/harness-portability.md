@@ -103,6 +103,7 @@ after a hook or a plugin with hooks changes.
   repository's own.
 - 2026-10-19: The user set compaction at 300k for Claude and Codex to cut context re-reading; they raise it if sessions compact too often.
 - 2026-11-17: Pi compacts the OpenCode Go models at 125K (per-model `compaction.modelOverrides`, written by `bootstrap_pi.sh`), and the catalog tries DeepSeek before GLM everywhere. Go bills every re-sent token in dollars, and long sessions live at 100-200K.
+- 2026-11-17: Pi runs `pi-quiet-tools` 0.2.0 as a trial: tool results over 12,000 characters (about 3K tokens; line count alone never cuts) keep their first 100 and last 60 lines (160 and 120 for errors), with the full text saved under the pi agent dir. File reads and subagent reports stay whole, because agents need exact mid-file text to edit; turn read cutting on later if tool output still wastes too many tokens. Settings live in `config/pi/extensions/quiet-tools-settings.ts`.
 - 2026-10-19: The Codex bootstrap now lists hooks waiting for trust, because Codex
   sessions and Orca workers kept stopping on the review prompt after a plugin update;
   bypassing hook trust was rejected.
