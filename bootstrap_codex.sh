@@ -203,7 +203,35 @@ first_table = re.search(r"(?m)^[ \t]*\[", prefix_text)
 root_text = prefix_text[:first_table.start()] if first_table else prefix_text
 local_root = []
 local_root_keys = []
-root_assignment = re.compile(r"^[ \t]*(?:\"((?:\\.|[^\"\\])*)\"|'([^']*)'|([A-Za-z0-9_-]+))[ \t]*=")
+root_key = r'(?:"(?:\\.|[^"\\])*"|\'[^\']*\'|[A-Za-z0-9_-]+)'
+root_assignment = re.compile(rf"^[ \t]*({root_key}(?:[ \t]*\.[ \t]*{root_key})*)[ \t]*=")
+table_body_assignment = re.compile(rf"^[ \t]*{root_key}[ \t]*=")
+key_segment = re.compile(r"\"((?:\\.|[^\"\\])*)\"|'([^']*)'|([A-Za-z0-9_-]+)")
+
+def key_path(text):
+    return tuple(next(group for group in match.groups() if group is not None) for match in key_segment.finditer(text))
+
+def has_path(data, path):
+    for key in path:
+        if not isinstance(data, dict) or key not in data:
+            return False
+        data = data[key]
+    return True
+
+def value_at(data, path):
+    for key in path:
+        if not isinstance(data, dict) or key not in data:
+            return None
+        data = data[key]
+    return data
+
+source_root_match = re.search(r"(?m)^[ \t]*\[", source_text)
+source_root_text = source_text[:source_root_match.start()] if source_root_match else source_text
+source_root_paths = []
+for line in source_root_text.splitlines():
+    match = root_assignment.match(line)
+    if match:
+        source_root_paths.append(key_path(match.group(1)))
 for line in root_text.splitlines():
     stripped = line.strip()
     if not stripped or stripped.startswith("#"):
@@ -218,12 +246,16 @@ for line in root_text.splitlines():
         parsed_line = tomllib.loads(line)
     except Exception as error:
         raise SystemExit("Could not safely merge multiline Codex root settings") from error
-    if len(parsed_line) != 1:
+    path = key_path(root_assignment.match(line).group(1))
+    if len(parsed_line) != 1 or not has_path(parsed_line, path):
         raise SystemExit("Could not safely merge Codex root settings")
-    key = next(iter(parsed_line))
-    if key not in source_data:
+    if path == ("skills", "config") and value_at(target_data, path) != value_at(source_data, path):
+        raise SystemExit(
+            "Your ~/.codex/config.toml sets skills.config; move its entries into config/codex.toml so they are not lost"
+        )
+    if not has_path(source_data, path):
         local_root.append(line.rstrip("\r\n"))
-        local_root_keys.append(key)
+        local_root_keys.append(path)
 
 retired = {"braintrust", "vidext-operator-my-workspace", "headroom", "sequential-thinking"}
 managed = {"codegraph", "searxng", "btca"}
@@ -288,7 +320,7 @@ for index, match in enumerate(headers):
             stripped = line.strip()
             if not stripped or stripped.startswith("#"):
                 continue
-            if not root_assignment.match(line):
+            if not table_body_assignment.match(line):
                 raise SystemExit(f"Could not safely merge Codex table {'.'.join(keys)}")
             try:
                 parsed_line = tomllib.loads(line)
@@ -303,8 +335,27 @@ for index, match in enumerate(headers):
         if additions:
             managed_table_entries[table_path] = additions
     elif match.start() < len(prefix_text):
+        table_path = tuple(keys)
+        if any(len(table_path) < len(path) and path[:len(table_path)] == table_path for path in source_root_paths):
+            owned = True
+            for line in target_text[match.end():end].splitlines():
+                stripped = line.strip()
+                if not stripped or stripped.startswith("#"):
+                    continue
+                if not table_body_assignment.match(line):
+                    owned = False
+                    break
+                body_key = next(iter(tomllib.loads(line)))
+                if not has_path(source_data, table_path + (body_key,)):
+                    owned = False
+                    break
+            if not owned:
+                raise SystemExit(
+                    f"Could not safely merge the target's [{'.'.join(table_path)}] table; move its entries into config/codex.toml"
+                )
+            continue
         local_tables.append(target_text[match.start():end].rstrip())
-        local_table_paths.append(tuple(keys))
+        local_table_paths.append(table_path)
 
 def without_mcp_tables(text):
     headers = list(table_header.finditer(text))
@@ -365,9 +416,9 @@ try:
     merged = tomllib.loads(source_text)
 except Exception as error:
     raise SystemExit(f"Could not merge Codex config: {error}")
-for key in local_root_keys:
-    if merged.get(key) != target_data.get(key):
-        raise SystemExit(f"Could not preserve Codex root setting {key}")
+for path in local_root_keys:
+    if value_at(merged, path) != value_at(target_data, path):
+        raise SystemExit(f"Could not preserve Codex root setting {'.'.join(path)}")
 for server in local_servers:
     if merged.get("mcp_servers", {}).get(server) != target_data["mcp_servers"][server]:
         raise SystemExit(f"Could not preserve local MCP server {server}")
