@@ -353,6 +353,8 @@ To add a Lucide icon the catalog lacks:
   preselects nothing.
 - **Write each option as the full answer.** The copied text carries the option's words, not
   a number.
+- **Never add "None of the above".** Every decision with options shows it after them, so
+  the user can always answer that no option fits.
 - **Put the reason for your recommendation in `why`.** Do not repeat the option's name.
   Leave `recommended` and `why` out when you have no recommendation.
 - **The title is a short question; the `question` is the same ask, spelled out.** "Push the

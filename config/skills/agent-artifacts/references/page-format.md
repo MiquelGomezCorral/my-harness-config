@@ -62,6 +62,9 @@ when the user presses **Copy my decisions**, shown at the end of every section t
 `decisions` block or a `select` table, even inside `details`, and pastes the text back.
 Copied rows list every cell, so keep rows distinct.
 
+A decision with any options also shows **None of the above** after them, added by the page: never
+put it in `options`, and a copied pick then reads `D1: None of the above`.
+
 Every page follows the system light or dark theme. The button at the bottom right switches
 it, and the viewer's browser keeps that choice for every artifact.
 
