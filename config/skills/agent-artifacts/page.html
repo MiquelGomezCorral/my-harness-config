@@ -217,6 +217,7 @@ dl.table dt{margin-top:0;font-weight:400;line-height:inherit}}
 .opts{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0;font-size:14px}
 .opts label{display:flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:4px 10px;cursor:pointer;background:var(--card)}
 .opts label.rec{border-color:color-mix(in srgb,var(--acc) 60%,var(--line));background:var(--infobg)}
+.opts label.alt{border-style:dashed}
 textarea{width:100%;min-height:38px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);padding:6px 8px;font:inherit;font-size:14px}
 button{font:inherit;font-size:14px;border:1px solid var(--acc);color:var(--acc);background:var(--card);border-radius:8px;padding:6px 14px;cursor:pointer}
 button.ok,button.bad{border-color:var(--tone);color:var(--tone)}
@@ -774,8 +775,17 @@ const renderers = {
     const state = loadState(storageKey);
     return (b.items || []).map((d) => {
       const picked = state[d.id]?.choice ?? d.recommended;
+      // Every decision with options offers a way out the agent never plans for; it is dashed, never recommended.
+      const given = d.options || [];
+      const escape = "None of the above";
+      const escaped = given.some((o) => String(o).trim().toLowerCase() === escape.toLowerCase());
+      const listed = given.length > 0 && !escaped ? [...given, escape] : given;
       // The recommended option stays softly outlined whichever option is picked; it carries no word.
-      const options = (d.options || []).map((o) => `<label${o === d.recommended ? ' class="rec" title="Recommended"' : ""}><input type="radio" name="dec-${escapeHtml(d.id)}" value="${escapeHtml(o)}"${o === picked ? " checked" : ""}>${inline(o)}</label>`).join("");
+      const options = listed.map((o) => {
+        const alt = o === escape && !escaped;
+        const cls = alt ? ' class="alt"' : o === d.recommended ? ' class="rec" title="Recommended"' : "";
+        return `<label${cls}><input type="radio" name="dec-${escapeHtml(d.id)}" value="${escapeHtml(o)}"${o === picked ? " checked" : ""}>${inline(o)}</label>`;
+      }).join("");
       // An item with a title leads with it, then one paragraph: the description ending in the question
       // in bold. An older item leads with the question and may add `context`.
       const asked = d.title && d.question ? ` <b>${inline(d.question)}</b>` : "";
