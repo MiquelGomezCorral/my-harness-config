@@ -55,6 +55,11 @@ and audits hunt for existing tests that do.
 - self-comparisons and identity copiers;
 - copied fixtures, inventories, manifests, or export lists;
 - exact source, import, or string greps;
+- absence checks that removed code, files, or wording stay gone, when restoring them would
+  be a deliberate choice, not a bug;
+- tests whose only check is what the type checker or compiler already rejects at
+  build time;
+- tests that only prove the browser or framework works, such as a native button rendering;
 - private predicate or call-shape tests duplicated at real boundaries;
 - duplicate invocations of the same contract;
 - provider-local replays of shared helpers;
@@ -75,8 +80,10 @@ and audits hunt for existing tests that do.
 ## Value bar
 
 Tests justify their maintenance cost by protecting behavior, a credible regression, or an
-independently meaningful contract. In an audit, an existing test that must change for
-behavior-preserving source reorganization is suspect, not automatically deletable; the
+independently meaningful contract. A good test fails only when the behavior or contract it
+guards changes, not when unrelated code, the environment, or the run order changes.
+In an audit, an existing test that must change for behavior-preserving source
+reorganization is suspect, not automatically deletable; the
 authoring gate still rejects new ones. A test must show its value; the audit does not have
 to prove it useless. When uncertain whether a test matters, report it as a finding that
 recommends deletion and state your confidence; edit only once every field under
@@ -131,6 +138,8 @@ ready to edit:
 
 ## Edit shape
 
+Before the first edit in audit or campaign mode, read
+[references/examples.md](references/examples.md) for worked before-and-after edits.
 Choose one coherent owner-boundary batch. Delete obsolete test-only exports, globals,
 wrappers, and dead production paths instead of preserving aliases. Move retained regressions
 to their canonical owners. Consolidate repeated package or dependency assertions into one

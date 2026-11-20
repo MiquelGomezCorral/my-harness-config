@@ -101,6 +101,17 @@ common_install_lintapple() {
   command -v lintapple >/dev/null 2>&1 || common_die 'lintapple installation completed but lintapple is not on PATH.'
 }
 
+common_install_modern_web_guidance() {
+  local version=1.0.1
+  if [[ "$(modern-web-guidance --version 2>/dev/null)" == "$version" ]]; then
+    return 0
+  fi
+  command -v npm >/dev/null 2>&1 || common_die 'Missing npm; cannot install modern-web-guidance.'
+  printf 'Installing modern-web-guidance (modern-web-guidance@%s)...\n' "$version"
+  npm install --global "modern-web-guidance@$version"
+  [[ "$(modern-web-guidance --version 2>/dev/null)" == "$version" ]] || common_die "modern-web-guidance installation completed but version $version is not first on PATH."
+}
+
 common_install_jq() {
   local version=1.8.2 os arch target temp
 
@@ -377,6 +388,7 @@ common_install_shared() {
   common_install_codegraph
   common_install_btca
   common_install_lintapple
+  common_install_modern_web_guidance
   if $searxng_mcp_enabled; then
     common_install_searxng_connector
   fi

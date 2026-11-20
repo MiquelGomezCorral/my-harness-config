@@ -1,17 +1,27 @@
 # UI
 
 Rules for any change that renders an interface (HTML, CSS, React, Vue, Svelte, and similar).
-Two layers:
+Three layers:
 
 - **Design rules** (this first part): judgment no tool measures. Placement, grouping,
 consistency, color, wording, states.
+- **Platform code** ([Modern Web Guidance](web/modern-web-guidance.md), below): current HTML,
+CSS and browser JS patterns, looked up before you write them. The bootstrap installs its CLI.
 - **Measured checks** (`lintapple`, below): real sizes, contrast, overflow and spacing on the
 rendered page. The bootstrap installs it globally.
 
 > **Must, on every UI change.** Size its UI impact and run that level's checks on the running
 > app before saying done (Inspect the running app). Check the main language, then every other
 > shipped language. A state change moves nothing outside the changed part. Elements of one kind
-> share size. Report numbers and what you did not check.
+> share size. Report numbers and what you did not check. Before you write or change HTML, CSS
+> or browser-side JS, search Modern Web Guidance; its section below says when you may skip it.
+
+## Modern Web Guidance
+
+Search it whenever you write or change HTML, CSS or browser-side JS, in any framework, and
+follow [web/modern-web-guidance.md](web/modern-web-guidance.md). Skip it only for a one-value
+tweak (a color, a spacing value, text) that adds no new pattern. The design rules below still
+decide what to build.
 
 ## Design rules
 
@@ -267,8 +277,10 @@ keep them.
 - **Chips are static labels**: a short adjective in a semantic tint. A chip that filters is a
 button and needs button semantics. Chips and tags of one kind share height, padding and type
 size, as buttons do. A type name is plain text or an icon, not a chip.
-- **Modals hold one task.** Cancel left, confirm right, a solid scrim, focus trapped and
-returned, Escape and the close control dismiss, never a modal on a modal.
+- **Modals hold one task.** Cancel left, confirm right, a solid scrim, Escape and the close
+control dismiss, never a modal on a modal. Focus stays inside and returns to the trigger on
+close: a native `<dialog>` opened with `showModal()` does both, so add no focus trap or
+focus-return code; write them only for a modal that is not a native dialog.
 - **The project's accessible primitives first, then native elements**; hand-roll a dialog,
 menu or select only with full keyboard and focus behavior.
 

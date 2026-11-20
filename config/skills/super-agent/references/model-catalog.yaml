@@ -223,5 +223,6 @@ git-worker:
 
 # Claude helper launches only. Start Claude with AGENT_MODEL_GUARD=off to skip it for one session.
 model_guard:
-  claude-opus-5-5: [super_agent, sub_orchestrator, reviewer-high]
-  claude-fable-5-2: [adversarial, reviewer-high]
+  #claude-opus-5-5: [super_agent, sub_orchestrator, reviewer-high]
+  claude-opus-5-5: [super_agent, sub_orchestrator, reviewer-high, coder]
+  claude-fable-5-2: [super_agent, adversarial, reviewer-high]
