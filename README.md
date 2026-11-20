@@ -309,6 +309,11 @@ The `test-audit` skill adapts [OpenClaw's `test-audit`](https://github.com/openc
 (MIT, OpenClaw Foundation). Its value bar, junk patterns, retention bar, candidate evidence,
 edit shape, and campaign phases are kept. Its OpenClaw-specific skill names, Vitest scripts,
 and PR flow are replaced by this repository's own test commands and the `git` skill.
+This repository's version also adapts three junk patterns (absence checks, type-checker
+restatements, and browser or framework behavior), the rule that a test fails only when its
+behavior changes, and the worked edits in `config/skills/test-audit/references/examples.md`
+from the [`prune-tests` skill in caldoai/skills](https://github.com/caldoai/skills/blob/main/skills/prune-tests/SKILL.md)
+(MIT, Copyright (c) 2026 Maze).
 
 The `code-quality` and `review` skills adapt their core rules from [Ponytail](https://github.com/DietrichGebert/ponytail)
 v5.3.2 by Dietrich Gebert (MIT). The license copy sits in each skill as `LICENSE-ponytail`.
