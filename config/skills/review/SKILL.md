@@ -1,6 +1,6 @@
 ---
 name: review
-description: Own review — the shared review standard (workflow, findings, P0-P3 severity, output contract) and `$review` orchestration for ordinary, staff-level, and swarm review gates. Use for any code review, including "is this over-engineered", and for whole-repo audits ("audit this codebase", "review the whole repo", "find bloat", "what can I delete"); the standard is in references/code-review.md.
+description: Own review — the shared review standard (workflow, findings, P0-P3 severity, output contract) and `$review` orchestration for ordinary, staff-level, and swarm review gates. Use for any code review, including "is this over-engineered", and for whole-repo audits ("audit this codebase", "review the whole repo", "find bloat", "what can I delete"), and for structure audits ("untangle", what must change together); the standard is in references/code-review.md.
 ---
 
 # Review Gate
@@ -41,6 +41,7 @@ tree (the named path, or the whole repo), not a diff. The workflow and output ar
 | `$review` invocation, presets, worker packets, and routing | [references/orchestration.md](references/orchestration.md) |
 | OCR evidence when `--ocr` is requested | [references/ocr-evidence.md](references/ocr-evidence.md) |
 | Convention audit | [references/convention-audit.md](references/convention-audit.md) |
+| Structure audit, only when asked for one ("untangle", what must change together); a plain repo audit stays in audit mode | [references/structure-audit.md](references/structure-audit.md) |
 | Swarm coordination when swarm mode is selected | [references/swarm-coordination.md](references/swarm-coordination.md) |
 
 A specialist reviewer performs the review and must not launch or orchestrate further
